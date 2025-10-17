@@ -1,6 +1,6 @@
 ﻿import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import QueueScreen from "./queue"; // <- fixed import
+import QueueScreen from "./queue";
 
 export default function QueueIndex() {
   return (
@@ -13,5 +13,5 @@ export default function QueueIndex() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  header: { fontSize: 20, fontWeight: "bold", marginBottom: 12 },
+  header: { fontSize: 24, fontWeight: "bold", marginBottom: 12 },
 });
