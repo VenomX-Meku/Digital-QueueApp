@@ -1,13 +1,14 @@
-import React from "react";
+
+
+import React from "react"; 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import DashboardScreen from "../app/screens/DashboardScreen";
+import DashboardScreen from "../app/screens/DashboardScreen"; 
 import FinanceScreen from "../app/screens/FinanceScreen";
-import QueueScreen from "../app/screens/QueueScreen";
-import SettingsScreen from "../app/screens/SettingsScreen";
+import QueueScreen from "../app/screens/QueueScreen"; 
+import SettingsScreen from "../app/screens/SettingsScreen"; 
 import TransactionScreen from "../app/screens/TransactionScreen";
-import QueueHistoryScreen from "../app/screens/QueueHistory"; // make sure this exists
+import QueueHistoryScreen from "../app/screens/QueueHistory"; // make sure this exists 
 import AnalyticsScreen from "../app/screens/AnalyticsScreen";
 import SupportScreen from "../app/screens/SupportScreen";
 
@@ -29,3 +30,4 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
+

@@ -31,6 +31,7 @@ export default function DashboardScreen() {
     { title: "Analytics", icon: "chart-line", color: "#2e7d32", screen: "Analytics" },
     { title: "Support", icon: "headset", color: "#f57c00", screen: "Support" },
     { title: "Settings", icon: "cog-outline", color: "#546e7a", screen: "Settings" },
+    { title: "Profile", icon: "account-outline", color: "#ff4081", screen: "Profile" }, // ✅ ADDED
   ];
 
   return (
@@ -131,3 +132,5 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
 });
+  
+
