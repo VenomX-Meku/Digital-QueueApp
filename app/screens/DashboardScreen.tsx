@@ -1,5 +1,6 @@
 ﻿// app/screens/DashboardScreen.tsx
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import {
   ScrollView,
   Text,
@@ -11,8 +12,9 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ NEW import to remember user role
 
-// Define a type for features to ensure type safety
+// ✅ Define type for features
 type Feature = {
   title: string;
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
@@ -23,17 +25,56 @@ type Feature = {
 export default function DashboardScreen() {
   const navigation = useNavigation<any>();
 
-  const features: Feature[] = [
+  // ✅ Role state ("admin" or "user")
+  const [role, setRole] = useState<"admin" | "user">("user");
+
+  // ✅ Load user role from AsyncStorage (set during login)
+  useEffect(() => {
+    const loadRole = async () => {
+      try {
+        const storedRole = await AsyncStorage.getItem("userRole");
+        if (storedRole === "admin" || storedRole === "user") {
+          setRole(storedRole);
+        } else {
+          setRole("user");
+        }
+      } catch (error) {
+        console.log("Error loading role:", error);
+      }
+    };
+    loadRole();
+  }, []);
+
+  // ✅ Save role manually (if needed for testing or login)
+  const saveRole = async (newRole: "admin" | "user") => {
+    try {
+      await AsyncStorage.setItem("userRole", newRole);
+      setRole(newRole);
+    } catch (error) {
+      console.log("Error saving role:", error);
+    }
+  };
+
+  // ✅ Separate features for admin and user
+  const adminFeatures: Feature[] = [
     { title: "Finance", icon: "wallet-outline", color: "#27c7d2", screen: "Finance" },
-    { title: "Queue", icon: "account-multiple-outline", color: "#666104", screen: "Queue" },
     { title: "Transactions", icon: "file-document-outline", color: "#1976d2", screen: "Transactions" },
-    { title: "Queue History", icon: "history", color: "#8e24aa", screen: "QueueHistory" },
     { title: "Analytics", icon: "chart-line", color: "#2e7d32", screen: "Analytics" },
-    { title: "Support", icon: "headset", color: "#f57c00", screen: "Support" },
     { title: "Settings", icon: "cog-outline", color: "#546e7a", screen: "Settings" },
-    { title: "Profile", icon: "account-outline", color: "#ff4081", screen: "Profile" }, // ✅ ADDED
   ];
 
+  const userFeatures: Feature[] = [
+    { title: "Queue", icon: "account-multiple-outline", color: "#666104", screen: "Queue" },
+    { title: "Queue History", icon: "history", color: "#8e24aa", screen: "QueueHistory" },
+    { title: "Support", icon: "headset", color: "#f57c00", screen: "Support" },
+    { title: "Profile", icon: "account-outline", color: "#ff4081", screen: "Profile" },
+  ];
+
+  // ✅ Merge based on role
+  const features: Feature[] =
+    role === "admin" ? [...adminFeatures, ...userFeatures] : userFeatures;
+
+  // ✅ UI (kept 100% same)
   return (
     <ImageBackground
       source={{
@@ -50,6 +91,20 @@ export default function DashboardScreen() {
           <Text style={styles.title}>Digital Queue & Finance App</Text>
           <Text style={styles.subtitle}>Smart. Fast. Efficient.</Text>
 
+          {/* ✅ NEW: Display current role */}
+          <Text style={styles.roleText}>Current Role: {role.toUpperCase()}</Text>
+
+          {/* ✅ Optional: Switch role manually (for testing) */}
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={() => saveRole(role === "admin" ? "user" : "admin")}
+          >
+            <Text style={styles.switchButtonText}>
+              Switch to {role === "admin" ? "User" : "Admin"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Existing feature grid (unchanged) */}
           <View style={styles.grid}>
             {features.map((item, index) => (
               <TouchableOpacity
@@ -76,12 +131,8 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  bg: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-  },
+  bg: { flex: 1 },
+  overlay: { flex: 1 },
   container: {
     flexGrow: 1,
     padding: 20,
@@ -98,7 +149,25 @@ const styles = StyleSheet.create({
   subtitle: {
     color: "#b2ebf2",
     fontSize: 16,
-    marginBottom: 30,
+    marginBottom: 10,
+  },
+  roleText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  switchButton: {
+    backgroundColor: "#27c7d2",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  switchButtonText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
   },
   grid: {
     flexDirection: "row",
@@ -132,5 +201,3 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
 });
-  
-
