@@ -13,6 +13,7 @@ import {
   Vibration,
   RefreshControl,
   Animated,
+  Clipboard, // ✅ use React Native Clipboard
 } from "react-native";
 import { MoneyContext, QueueData } from "../../context/MoneyContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -260,10 +261,38 @@ export default function QueueScreen() {
 
               {/* Ticket info */}
               <View style={{ flex: 1, marginLeft: 10 }}>
-                <Text style={styles.ticket}>
-                  🎟 {item.ticket} ({item.type})
-                </Text>
+                {/* ✅ Quick Copy Ticket */}
+                <TouchableOpacity
+                  onPress={() => {
+                    Clipboard.setString(item.ticket);
+                    showAnimatedNotice(`📋 Ticket ${item.ticket} copied!`);
+                  }}
+                >
+                  <Text style={styles.ticket}>
+                    🎟 {item.ticket} ({item.type})
+                  </Text>
+                </TouchableOpacity>
+
                 <Text style={styles.position}>Position: {item.position}</Text>
+
+                {/* ✅ Estimated Wait */}
+                <Text style={{ color: "#fff", fontSize: 13 }}>
+                  ⏳ Est. Wait: {item.position * averageWaitTime} min
+                </Text>
+
+                {/* ✅ VIP Badge */}
+                {item.type === "VIP" && (
+                  <Text
+                    style={{
+                      color: "#ffeb3b",
+                      fontWeight: "700",
+                      marginLeft: 6,
+                      fontSize: 12,
+                    }}
+                  >
+                    VIP
+                  </Text>
+                )}
               </View>
 
               {/* Delete button far right */}
