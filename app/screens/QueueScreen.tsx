@@ -151,7 +151,7 @@ export default function QueueScreen() {
         <Text
           style={[
             styles.status,
-            { backgroundColor: queue.length > 0 ? "#27c7d2" : "#bdbdbd" },
+            { backgroundColor: queue.length > 0 ? "#4caf50" : "#bdbdbd" },
           ]}
         >
           {queue.length > 0 ? "🟢 OPEN" : "🔴 CLOSED"}
@@ -161,10 +161,10 @@ export default function QueueScreen() {
 
       {/* Join Queue */}
       <View style={styles.joinRow}>
-        <Button title="Join Queue" onPress={handleJoinQueue} color="#27c7d2" />
+        <Button title="Join Queue" onPress={handleJoinQueue} color="#0288d1" />
         <View style={styles.vipRow}>
           <Text style={{ marginRight: 8, fontWeight: "600" }}>VIP</Text>
-          <Switch value={vip} onValueChange={setVip} />
+          <Switch value={vip} onValueChange={setVip} thumbColor="#fbc02d" />
         </View>
       </View>
 
@@ -172,15 +172,15 @@ export default function QueueScreen() {
       <Text style={styles.waitInfo}>⏳ Avg Wait: {nextWait}m</Text>
       <View style={styles.summaryBox}>
         <View style={styles.statItem}>
-          <MaterialCommunityIcons name="account-group" size={20} color="#333" />
+          <MaterialCommunityIcons name="account-group" size={20} color="#1b5e20" />
           <Text style={styles.statText}>Total: {queue.length}</Text>
         </View>
         <View style={styles.statItem}>
-          <MaterialCommunityIcons name="star" size={20} color="#ff9800" />
+          <MaterialCommunityIcons name="star" size={20} color="#ffb300" />
           <Text style={styles.statText}>VIP: {vipCount}</Text>
         </View>
         <View style={styles.statItem}>
-          <MaterialCommunityIcons name="account" size={20} color="#666104" />
+          <MaterialCommunityIcons name="account" size={20} color="#3e2723" />
           <Text style={styles.statText}>Normal: {normalCount}</Text>
         </View>
       </View>
@@ -189,16 +189,17 @@ export default function QueueScreen() {
       <TextInput
         style={styles.searchBox}
         placeholder="🔍 Search ticket..."
+        placeholderTextColor="#555"
         value={search}
         onChangeText={setSearch}
       />
 
       {/* Actions */}
       <View style={styles.actionRow}>
-        <Button title="🗑 Clear All" color="#d32f2f" onPress={confirmClearQueue} />
+        <Button title="🗑 Clear All" color="#c62828" onPress={confirmClearQueue} />
         <Button
           title={refreshing ? "Refreshing..." : "🔄 Refresh"}
-          color="#0277bd"
+          color="#1565c0"
           onPress={handleRefresh}
           disabled={refreshing}
         />
@@ -234,12 +235,11 @@ export default function QueueScreen() {
             style={[
               styles.card,
               {
-                backgroundColor: item.type === "VIP" ? "#ff9800" : "#666104",
+                backgroundColor: item.type === "VIP" ? "#ffb74d" : "#607d8b",
               },
             ]}
           >
             <View style={styles.cardHeader}>
-              {/* Profile Icon */}
               <MaterialCommunityIcons
                 name={
                   item.type === "VIP"
@@ -250,8 +250,6 @@ export default function QueueScreen() {
                 color="#fff"
                 style={{ marginRight: 8 }}
               />
-
-              {/* Serve button next to icon */}
               <TouchableOpacity
                 style={styles.serveBtn}
                 onPress={() => confirmServe(item.ticket, item.type)}
@@ -259,9 +257,7 @@ export default function QueueScreen() {
                 <MaterialCommunityIcons name="check" size={18} color="#fff" />
               </TouchableOpacity>
 
-              {/* Ticket info */}
               <View style={{ flex: 1, marginLeft: 10 }}>
-                {/* ✅ Quick Copy Ticket */}
                 <TouchableOpacity
                   onPress={() => {
                     Clipboard.setString(item.ticket);
@@ -274,17 +270,14 @@ export default function QueueScreen() {
                 </TouchableOpacity>
 
                 <Text style={styles.position}>Position: {item.position}</Text>
-
-                {/* ✅ Estimated Wait */}
                 <Text style={{ color: "#fff", fontSize: 13 }}>
                   ⏳ Est. Wait: {item.position * averageWaitTime} min
                 </Text>
 
-                {/* ✅ VIP Badge */}
                 {item.type === "VIP" && (
                   <Text
                     style={{
-                      color: "#ffeb3b",
+                      color: "#fffde7",
                       fontWeight: "700",
                       marginLeft: 6,
                       fontSize: 12,
@@ -295,7 +288,6 @@ export default function QueueScreen() {
                 )}
               </View>
 
-              {/* Delete button far right */}
               <TouchableOpacity
                 style={styles.removeBtn}
                 onPress={() => confirmRemove(item.ticket)}
@@ -312,12 +304,12 @@ export default function QueueScreen() {
 
 // 🎨 Styles
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#f5f9f7" },
+  container: { flex: 1, padding: 16, backgroundColor: "#dbf6f1ff" },
   header: {
     fontSize: 22,
     fontWeight: "700",
     textAlign: "center",
-    color: "#27c7d2",
+    color: "#006064",
     marginBottom: 8,
   },
   statusRow: {
@@ -332,32 +324,33 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
   },
-  elapsed: { color: "#333", fontWeight: "500" },
+  elapsed: { color: "#004d40", fontWeight: "500" },
   joinRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   vipRow: { flexDirection: "row", alignItems: "center", marginLeft: 12 },
   waitInfo: {
     marginTop: 4,
     fontWeight: "600",
-    color: "#33691e",
+    color: "#006064",
     textAlign: "center",
   },
   summaryBox: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: "#dcedc8",
+    backgroundColor: "#b2dfdb",
     padding: 10,
     borderRadius: 12,
     marginVertical: 8,
   },
   statItem: { flexDirection: "row", alignItems: "center", gap: 6 },
-  statText: { fontWeight: "600", color: "#333" },
+  statText: { fontWeight: "600", color: "#004d40" },
   searchBox: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#0097a7",
     borderRadius: 12,
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#e0f2f1",
     marginVertical: 6,
+    color: "#004d40",
   },
   actionRow: {
     flexDirection: "row",
@@ -378,16 +371,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  ticket: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  position: { color: "#fff", fontSize: 13, marginTop: 2 },
+  ticket: { color: "#a8f41aff", fontWeight: "700", fontSize: 16 },
+  position: { color: "#f8f2f2ff", fontSize: 13, marginTop: 2 },
   serveBtn: {
-    backgroundColor: "#2e7d32",
+    backgroundColor: "#26962cff",
     padding: 6,
     borderRadius: 8,
     marginRight: 8,
   },
   removeBtn: {
-    backgroundColor: "#900",
+    backgroundColor: "#c62828",
     padding: 6,
     borderRadius: 8,
     marginLeft: 8,
@@ -398,7 +391,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     alignSelf: "center",
-    backgroundColor: "#27c7d2",
+    backgroundColor: "rgba(27, 215, 21, 1)",
     padding: 8,
     borderRadius: 8,
     shadowColor: "#000",
