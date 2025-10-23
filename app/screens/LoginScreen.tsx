@@ -14,7 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import Toast from "react-native-root-toast"; // ✅ npm install react-native-root-toast
+import Toast from "react-native-root-toast";
 
 export default function LoginScreen() {
   const navigation = useNavigation<any>();
@@ -22,30 +22,30 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [secureText, setSecureText] = useState(true);
-  const [isAdminMode, setIsAdminMode] = useState(false); // 🟢 ADDED FOR ADMIN MODE
-  const [users, setUsers] = useState<
-    { username: string; password: string; role: string }[]
-  >([]);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [users, setUsers] = useState<{ username: string; password: string; role: string }[]>([]);
+  const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
 
-  // ✅ Load existing users from AsyncStorage when screen opens
   useEffect(() => {
     const loadUsers = async () => {
       const savedUsers = await AsyncStorage.getItem("users");
-      if (savedUsers) {
-        setUsers(JSON.parse(savedUsers));
+      if (savedUsers) setUsers(JSON.parse(savedUsers));
+
+      const role = await AsyncStorage.getItem("userRole");
+      if (role) {
+        setLoggedInRole(role);
+        navigation.replace("Dashboard");
       }
     };
     loadUsers();
   }, []);
 
-  const validatePassword = (password: string) => {
-    const strong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{4,}$/; // ✅ easier rule
-    return strong.test(password);
-  };
+  const validatePassword = (password: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{4,}$/.test(password);
 
   const showToast = (message: string) => {
-    Toast.show(message, {
-      duration: Toast.durations.SHORT,
+    const toast = Toast.show(message, {
+      duration: Toast.durations.LONG, // ✅ Use LONG instead of FOREVER
       position: Toast.positions.TOP,
       shadow: true,
       animation: true,
@@ -53,46 +53,41 @@ export default function LoginScreen() {
       textColor: "#fff",
       delay: 0,
     });
+    return toast;
   };
 
-  // ✅ Handle login (both user & admin)
   const handleLogin = async () => {
     if (!username || !password) {
       Alert.alert("Error", "Please enter username and password");
       return;
     }
-
-    const allUsers = users.length ? users : [];
-    const foundUser = allUsers.find(
-      (u) =>
+    const foundUser = users.find(
+      u =>
         u.username.toLowerCase() === username.toLowerCase() &&
         u.password === password &&
-        u.role === (isAdminMode ? "admin" : "user") // 🟢 check by role
+        u.role === (isAdminMode ? "admin" : "user")
     );
-
     if (!foundUser) {
       Alert.alert("Error", "Invalid username or password");
       return;
     }
 
-    try {
-      await AsyncStorage.setItem("userRole", foundUser.role);
-      showToast(
-        `✅ ${isAdminMode ? "Admin" : "User"} Login Successful!`
-      );
+    await AsyncStorage.setItem("userRole", foundUser.role);
+    setLoggedInRole(foundUser.role);
+
+    // ✅ Show toast, wait 2 seconds, then navigate
+    const toast = showToast(`✅ ${isAdminMode ? "Admin" : "User"} Login Successful!`);
+    setTimeout(() => {
+      Toast.hide(toast);
       navigation.replace("Dashboard");
-    } catch (error) {
-      console.log("Error saving role:", error);
-    }
+    }, 2000);
   };
 
-  // ✅ Handle signup (for user or admin)
   const handleSignup = async () => {
     if (!username || !password) {
       Alert.alert("Error", "Please enter username and password");
       return;
     }
-
     if (!validatePassword(password)) {
       Alert.alert(
         "Weak Password",
@@ -100,31 +95,27 @@ export default function LoginScreen() {
       );
       return;
     }
-
     const userExists = users.find(
-      (u) => u.username.toLowerCase() === username.toLowerCase()
+      u => u.username.toLowerCase() === username.toLowerCase()
     );
     if (userExists) {
       Alert.alert("Error", "Username already exists");
       return;
     }
 
-    const newUser = {
-      username,
-      password,
-      role: isAdminMode ? "admin" : "user", // 🟢 store role type
-    };
-
+    const newUser = { username, password, role: isAdminMode ? "admin" : "user" };
     const updatedUsers = [...users, newUser];
     await AsyncStorage.setItem("users", JSON.stringify(updatedUsers));
     setUsers(updatedUsers);
 
-    showToast(
-      `🎉 ${isAdminMode ? "Admin" : "User"} Signup Successful!`
-    );
-    setIsLogin(true); // ✅ Switch to login mode
-    setUsername("");
-    setPassword("");
+    // ✅ Show toast for signup
+    const toast = showToast(`🎉 ${isAdminMode ? "Admin" : "User"} Signup Successful!`);
+    setTimeout(() => {
+      Toast.hide(toast);
+      setIsLogin(true);
+      setUsername("");
+      setPassword("");
+    }, 2000);
   };
 
   return (
@@ -143,7 +134,6 @@ export default function LoginScreen() {
             : "User Sign Up"}
         </Text>
 
-        {/* Username */}
         <TextInput
           style={styles.input}
           placeholder="Username"
@@ -152,7 +142,6 @@ export default function LoginScreen() {
           onChangeText={setUsername}
         />
 
-        {/* Password */}
         <View style={styles.passwordContainer}>
           <TextInput
             style={[styles.input, { flex: 1, marginBottom: 0 }]}
@@ -174,17 +163,13 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Button */}
         <TouchableOpacity
           style={styles.button}
           onPress={isLogin ? handleLogin : handleSignup}
         >
-          <Text style={styles.buttonText}>
-            {isLogin ? "Login" : "Sign Up"}
-          </Text>
+          <Text style={styles.buttonText}>{isLogin ? "Login" : "Sign Up"}</Text>
         </TouchableOpacity>
 
-        {/* Toggle Login/Signup */}
         <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
           <Text style={styles.toggleText}>
             {isLogin
@@ -193,15 +178,12 @@ export default function LoginScreen() {
           </Text>
         </TouchableOpacity>
 
-        {/* 🟢 Toggle Admin/User Mode */}
         <TouchableOpacity
           onPress={() => setIsAdminMode(!isAdminMode)}
           style={{ marginTop: 10 }}
         >
           <Text style={styles.adminSwitch}>
-            {isAdminMode
-              ? "Switch to User Mode"
-              : "Switch to Admin Mode"}
+            {isAdminMode ? "Switch to User Mode" : "Switch to Admin Mode"}
           </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -211,18 +193,8 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   bg: { flex: 1 },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 25,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: "#fff",
-    marginBottom: 30,
-  },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 25 },
+  title: { fontSize: 28, fontWeight: "900", color: "#fff", marginBottom: 30 },
   input: {
     width: "100%",
     borderWidth: 1,
@@ -253,19 +225,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  toggleText: {
-    color: "#fff",
-    marginTop: 18,
-    fontSize: 14,
-  },
-  adminSwitch: {
-    color: "#ffeb3b",
-    fontSize: 14,
-    fontWeight: "600",
-  },
+  buttonText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+  toggleText: { color: "#fff", marginTop: 18, fontSize: 14 },
+  adminSwitch: { color: "#ffeb3b", fontSize: 14, fontWeight: "600" },
 });
