@@ -31,7 +31,19 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
+      {/* ✅ Added screenOptions to control navbar color */}
+      <Stack.Navigator
+        initialRouteName={initialRoute}
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#ffba0b65", // ✅ Navbar background color
+          },
+          headerTintColor: "#ffffff", // ✅ Navbar text/icon color
+          headerTitleStyle: {
+            fontWeight: "bold", // ✅ Bold title
+          },
+        }}
+      >
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
         <Stack.Screen name="Finance" component={FinanceScreen} />
