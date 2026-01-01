@@ -2,31 +2,40 @@ import React from "react";
 import { View, Text, Button, StyleSheet, Alert, Image } from "react-native";
 
 export default function ProfileScreen() {
-  const handleLogout = () =>
+  const handleLogout = () => {
     Alert.alert("Logout", "You have logged out successfully!");
+  };
 
-  const handleEditProfile = () =>
+  const handleEditProfile = () => {
     Alert.alert("Edit Profile", "Edit profile feature coming soon!");
+  };
+
+  const handleChangePassword = () => {
+    Alert.alert("Change Password", "Change password feature coming soon!");
+  };
 
   return (
     <View style={styles.container}>
-      {/* Profile Avatar */}
+      {/* Avatar */}
       <Image
         source={{ uri: "https://i.pravatar.cc/150?img=3" }}
         style={styles.avatar}
       />
 
-      {/* Existing Content */}
+      {/* Profile Info */}
       <Text style={styles.header}>Profile</Text>
       <Text style={styles.text}>Name: John Doe</Text>
       <Text style={styles.text}>Email: john@example.com</Text>
 
-      {/* New Feature: Edit Profile */}
+      {/* Actions */}
       <View style={styles.buttonSpacing}>
         <Button title="Edit Profile" onPress={handleEditProfile} />
       </View>
 
-      {/* Existing Logout Button */}
+      <View style={styles.buttonSpacing}>
+        <Button title="Change Password" onPress={handleChangePassword} />
+      </View>
+
       <View style={styles.buttonSpacing}>
         <Button title="Logout" color="red" onPress={handleLogout} />
       </View>
